@@ -87,7 +87,7 @@ char *param = "type a\n"
               "sign1 1\n"
               "sign0 1";
 
-int t = 3, n = 5;
+int t = 3, n = 4;
 
 int num = 16;
 
@@ -120,8 +120,8 @@ void printf_buff(char *buff,int size) {
     int i=0;
     for (i=0;i<size;i++) {
         printf("%02X",(unsigned char )buff[i]);
-        if((i+1)%64==0)
-            putchar('\n');
+//        if((i+1)%64==0)
+//            putchar('\n');
     }
     printf("\n");
 }
@@ -348,6 +348,7 @@ void recover_secret(element_t* s,element_t *result,pairing_t pairing)
 {
 //    int shareid[3] = {3,2,1};
     int shareid[t];
+//    shareid = (int*) malloc(sizeof(int)*t);
     printf("选择的%d个用于计算w的服务器为:\n",t);
     random_select(&shareid);
 //    for(int i=0;i<t;i++)
@@ -359,8 +360,8 @@ void recover_secret(element_t* s,element_t *result,pairing_t pairing)
     //     printf("%d\n",IS[i].chosen);
     // }
 
-    element_t *l;
-    l = (element_t*)malloc(sizeof(element_t) * (t));
+    element_t l[t];
+//    l = (element_t*)malloc(sizeof(element_t) * (t));
 
     for(int i=0;i<t;i++)
     {
@@ -401,7 +402,7 @@ void recover_secret(element_t* s,element_t *result,pairing_t pairing)
     element_printf("\nrecover secret = %B\n",s);
 //    printf("here1\n");
 
-    free(l);
+//    free(l);
     free(wl);
     free(w_compute);
 
@@ -451,7 +452,33 @@ void Ererand(element_t* C1_,element_t* C2_,element_t C1,element_t C2,element_t p
     element_mul_zn(tmp2,pk,r_);
     element_add(C1_,C1,tmp1);
     element_add(C2_,C2,tmp2);
+    element_clear(r_);
+    element_clear(tmp1);
+    element_clear(tmp2);
 }
 
-void
+void EKM(element_t *pk_,element_t pk,element_t r){
+    element_t tmp;
+    element_init_G1(tmp,PP.pairing);
+    element_pow_zn(tmp,PP.P,r);
+    element_add(pk_,pk,tmp);
+}
 
+void H1(element_t *e,element_t g,char *m){
+    element_t tmp;
+    char buff[128];
+    memset(buff,0, sizeof(buff));
+    element_init_Zr(e,PP.pairing);
+    element_init_Zr(tmp,PP.pairing);
+    element_to_bytes_compressed(buff,g);
+    strcat(buff,m);
+    element_from_hash(e,buff, strlen(buff));
+    element_clear(tmp);
+}
+void H2(element_t *e,char* m){
+    element_init_G1(e,PP.pairing);
+    element_from_hash(e,m, strlen(m));
+}
+void H3(unsigned char* h,unsigned char* m){
+    genSHA256(h,m);
+}

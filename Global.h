@@ -32,6 +32,40 @@ typedef struct{
     pairing_t pairing;//pairing中包含了G和GT
 } PublicParameter;
 
+typedef struct {
+    char si[128]
+}Si;
+
+typedef struct {
+    char vi[128]
+}Vi;
+
+typedef struct {
+    char ID[64];
+    char ki[128];
+    char ppk[128];
+}Sharemessage;
+
+typedef struct {
+    char ID[64];
+    char pw_[256];
+    char tpk[256];
+    char pld[64];
+}Req;
+
+typedef struct {
+    char sigmai[256];
+    char C1[256];
+    char C2[256];
+}Res;
+
+typedef struct {
+    int sd;
+    Req req;
+    Res res;
+}Message;
+
+
 extern PublicParameter PP;
 
 //extern int t = 3 ,n = 5;
@@ -78,6 +112,15 @@ void EEnc(element_t* C1,element_t* C2,element_t pk,element_t M);
 
 void EDec(element_t *M,element_t sk,element_t C1, element_t C2);
 
+void Ererand(element_t* C1_,element_t* C2_,element_t C1,element_t C2,element_t pk);
+
+void EKM(element_t *pk_,element_t pk,element_t r);
+
+void H1(element_t *e,element_t g,char *m);
+
+void H2(element_t *e,char* m);
+
+void H3(unsigned char* h,unsigned char* m);
 
 
 #endif //DEDUPLICATION_GLOBLE_H
